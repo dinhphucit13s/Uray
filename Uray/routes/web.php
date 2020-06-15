@@ -55,6 +55,7 @@ Route::group(['namespace' => 'Auth'], function(){
 
 Route::group(['middleware' => 'auth', 'namespace'=>'Frontend'], function(){
 	Route::get('order', 'OrderController@index')->name('order.index');
+	Route::get('/orderFinal','OrderController@orderFinal');
 	Route::post('order', [ 'as' => 'order', 'uses' => 'OrderController@store']);
 	Route::resource('/review','ReviewController');
 	Route::resource('/changePassword','ChangePasswordController');
