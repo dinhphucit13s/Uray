@@ -30,5 +30,4 @@
     </tbody>
 </table>
 <p>Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất!</p>
-<h2>Cảm ơn bạn đã tin tưởng và ủng hộ Uray!</h2>
 
