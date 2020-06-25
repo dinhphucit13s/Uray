@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <div class=" col-md-12 inner-title-page">
-                <h1>Bạn đã đặt hàng thành công sẽ có 1 số thông tin đặt hàng về địa chỉ mail của bạn</h1>
+                <h1>Tài khoản của bạn không đủ số dư</h1>
             </div>
         </div>
     </div>

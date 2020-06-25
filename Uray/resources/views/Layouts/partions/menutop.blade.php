@@ -69,7 +69,7 @@
                                                         {{$cart->price}}
                                                 </span>
                                                 <span class="quantity">
-                                                    Qty: {{$cart->qty}}
+                                                    Số Lượng: {{$cart->qty}}
                                                 </span>
                                                 <a href="#" class="remove">
                                                     <span class="lnr lnr-cross"></span>

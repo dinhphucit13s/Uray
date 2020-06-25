@@ -20,10 +20,10 @@ class MailOrderConfirm extends Mailable
      *
      * @return void
      */
-    public function __construct(Order $order)
+    public function __construct(Order $orders)
     {
-        $this->order = $order;      
-        $detail = OrderDetail::where('order_id', $this->order->id)->get();
+        $this->order = $orders;
+        $detail = OrderDetail::where('order_id', $this->order->getAttribute('ID'))->get();
         $this->detail = $detail;
     }
 
@@ -37,7 +37,7 @@ class MailOrderConfirm extends Mailable
         
         return $this->view('backend.email.mail')->with([
             'order' => $this->order,
-            'details' => $this->detail
+            'details' => $this->detail,
         ]);
     }
 }

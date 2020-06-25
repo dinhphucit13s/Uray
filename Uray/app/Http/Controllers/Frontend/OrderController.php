@@ -26,31 +26,21 @@ class OrderController extends Controller
         $carts = $request->session()->get('carts') ?? collect();
         $type_payment = $request->type_payment;
         if ($type_payment == 'NH') {
-            createOrderOnDB($request, $type_payment);
-            return redirect('/order');
+            /*tạo mới đơn hàng vào DB*/
+            $order = new Order();
+            $order = $this->createOrderOnDB($request, $type_payment);
+            /*send mail*/
+            Mail::to('vdphuit2@gmail.com')->send(new MailOrderConfirm($order));
+            $request->session()->forget('carts');
+            return view('frontend.order.orderFinal');
         } else if ($type_payment == 'VNPAY'){
             // $url = 'https://sandbox.nganluong.vn:8088/nl35/checkout.php?merchant_site_code=49018&return_url=http://la2.test/nganluong/success.php&receiver=dinhphucit13s@gmail.com&order_code=NL_1447474310&price=2000&currency=vnd&quantity=1&tax=0&discount=0&fee_cal=0&fee_shipping=0&secure_code=a4c65cbe37e5459a3e5f732a5c17f8a3';
             //return redirect($url);
-            $url_return = $this->orderVnpay($request, $carts);
-            return redirect($url_return);
-        }
-    }
-
-    public function orderFinal(Request $request)
-    {
-        return view('frontend.order.orderFinal');
-    }
-
-    /**
-     * 
-     * @param Request $request
-     * @param $type_payment
-     */
-    public function createOrderOnDB(Request $request, $type_payment) {
-        $carts = $request->session()->get('carts') ?? collect();
-        Order::create([
+            $request->session()->put('cartsInsert',$carts);
+            $cartss = $request->session()->get('carts') ?? collect();
+            Order::create([
                 'user_name' => $request->user_name,
-                'totalMoney' => $carts->total,
+                'totalMoney' => $cartss->total,
                 'Date' => Carbon::now('Asia/Ho_Chi_Minh'),
                 'user_id' => auth()->user()->id,
                 'address' => $request->address,
@@ -58,15 +48,25 @@ class OrderController extends Controller
                 'phone' => $request->phone,
                 'status' => 'Chưa xử lý'
             ]);
+            $url_return = $this->orderVnpay($request, $cartss);
+            return redirect($url_return);
+        }
+
+    }
+
+    public function orderFinal(Request $req)
+    {
+        if ($req->vnp_ResponseCode == '00'){
+            $cartsInsert = $req->session()->get('carts') ?? collect();
             $orderId = Order::where('user_id', auth()->user()->id)->max('id');
-            foreach ($carts as $cart) {
+            foreach ($cartsInsert as $cart) {
                 OrderDetail::create([
                     'order_id' => $orderId,
                     'product_id' => $cart->id,
                     'product_name' => $cart->product_name,
                     'product_price' => $cart->price,
                     'qty' => $cart->qty,
-                    'note' => $request->note
+                    'note' => $req->note
 
                 ]);
 
@@ -79,8 +79,55 @@ class OrderController extends Controller
             }
             $order = new Order();
             $order = Order::findOrFail($orderId);
-//            Mail::to($request->email)->send(new MailOrderConfirm($order));
-            $request->session()->forget('carts');
+            Mail::to('vdphuit2@gmail.com')->send(new MailOrderConfirm($order));
+            return view('frontend.order.orderFinal');
+        } else {
+            $orderId = Order::where('user_id', auth()->user()->id)->max('id');
+            $blog = Order::findOrFail($orderId);
+            $blog->delete();
+            return view('frontend.order.orderFinalError');
+        }
+
+    }
+
+    /**
+     * 
+     * @param Request $request
+     * @param $type_payment
+     */
+    public function createOrderOnDB($requests, $type_payment) {
+        $carts = $requests->session()->get('carts') ?? collect();
+        Order::create([
+                'user_name' => $requests->user_name,
+                'totalMoney' => $carts->total,
+                'Date' => Carbon::now('Asia/Ho_Chi_Minh'),
+                'user_id' => auth()->user()->id,
+                'address' => $requests->address,
+                'email' => $requests->email,
+                'phone' => $requests->phone,
+                'status' => 'Chưa xử lý'
+            ]);
+            $orderId = Order::where('user_id', auth()->user()->id)->max('id');
+            foreach ($carts as $cart) {
+                OrderDetail::create([
+                    'order_id' => $orderId,
+                    'product_id' => $cart->id,
+                    'product_name' => $cart->product_name,
+                    'product_price' => $cart->price,
+                    'qty' => $cart->qty,
+                    'note' => $requests->note
+
+                ]);
+
+                $product = Product::find($cart->id);
+                $qtyNew = $product->qty_nhap - $cart->qty;
+
+                $product->qty_nhap = $qtyNew;
+                $product->save();
+
+            }
+            $order = new Order();
+            return Order::findOrFail($orderId);
     }
 
     public function orderVnpay(Request $request, $carts)
