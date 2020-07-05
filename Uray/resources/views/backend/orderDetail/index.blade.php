@@ -117,7 +117,7 @@
 		                        </div>
 		                        @if($order->status == 'Chưa xử lý')
 			                        <div style="text-align: right; margin-top: 10px">
-			                        	<form role="form" method="post" action="{{ route('orderBackend.update',['id'=>$order->id])}}">
+			                        	<form role="form" method="post" action="{{ route('orderBackend.update',['id'=>$order->ID])}}">
 			                        		{{ csrf_field() }}
 							                <input name="_method" type="hidden" value="PUT">
 			                        		<input type="hidden" name="email" value="{{$order->email}}">

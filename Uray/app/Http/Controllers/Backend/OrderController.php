@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Backend\Order\UpdateOrderRequest;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\User;
@@ -14,9 +15,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = DB::table('orders')
-                    ->orderBy('id', 'DESC')
-                    ->get();
+        $orders = Order::all();
         return view('backend.order.index')->with([
             'orders' => $orders
         ]);
@@ -25,7 +24,7 @@ class OrderController extends Controller
     {
         $order = Order::find($id);
         if(!$order) {
-            abort(404);
+            return abort(404);
         }
         $details = OrderDetail::where('order_id',$id)->get();
         return view('backend.orderDetail.index')->with([
@@ -33,16 +32,16 @@ class OrderController extends Controller
             'order' => $order
         ]);
     }
-    public function update(Request $request, $id){
+    public function update(UpdateOrderRequest $request, $id){
 
-        $order = Order::find($id);
+        $orders = Order::find($id);
 
-        if(!$order) {
-            abort(404);
+        if(!$orders) {
+            return abort(404);
         }
-        $order->status = 'Giao hàng';
-        $order->save();
-        Mail::to($request->email)->send(new MailShip($order));
-        return redirect('/admin/orderBackend');
+        $orders->status = "kkk";
+        $orders->update($request->all());
+        // Mail::to($request->email)->send(new MailShip($order));
+        return $this->index();
     }
 }

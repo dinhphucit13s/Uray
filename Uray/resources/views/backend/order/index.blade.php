@@ -101,7 +101,7 @@
 		                                <tbody>
 		                                    @foreach($orders as $order)
 						                  	<tr>
-							                    <td>{{$order->id}}</td>
+							                    <td>{{$order->ID}}</td>
 							                    <td>{{$order->user_name}}</td>
 							                    <td>{{$order->email}}</td>
 							                    <td>{{$order->address}}</td>
@@ -110,8 +110,8 @@
 							                    <td>{{$order->Date}}</td>
 							                    <td>{{$order->status}}</td>
 		                                        <td style="width: 125px !important;">
-		                                            <div class="btn-group project-list-action">
-						                                <a href="{{ route('orderBackend.show',['id'=>$order->id])}}" style="float: left;">
+		                                           <div class="btn-group project-list-action">
+						                                <a href="{{ route('orderBackend.show',['id'=>$order->ID])}}" style="float: left;">
 						                                	<button type="button" class="btn btn-white btn-action btn-xs">Xem chi tiết</button>
 						                                </a>
 						                                

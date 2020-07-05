@@ -42,7 +42,7 @@ Route::group(['namespace'=>'Backend', 'prefix' => 'admin', 'middleware' => 'auth
 	Route::resource('/review','ReviewController');
 	//Route::get('/order','OrderController@index')->name('orderBackend');
 	Route::resource('/orderBackend', 'OrderController');
-	//Route::get('/order/{id}','OrderController@show')->name('orderdetail');
+	// Route::get('/order/{id}','OrderController@show')->name('orderdetail');
 	// Route::get('logout','LoginController@logout');
 });
 Route::group(['namespace' => 'Auth'], function(){
